@@ -6,6 +6,8 @@ local function Asteroid(def)
         radius = def.radius,
         angle = def.angle,
         pointsNum = def.pointsNum,
+
+        destroyed = false,
     }
 
     local offsets = {}
@@ -13,7 +15,16 @@ local function Asteroid(def)
         offsets[i] = math.random(-15, 15)
     end
 
-    local function makeShape()
+    local function onLaserUpdate(l)
+        if asteroid:collides(l) then
+            asteroid.destroyed = true
+            Event:unsubscribe('laser_update', onLaserUpdate)
+        end
+    end
+
+    Event:subscribe('laser_update', onLaserUpdate)
+
+    local function getShape()
         local mapped = {}
         for i = 1, asteroid.pointsNum do
             local angle = (i * 2 * math.pi) / asteroid.pointsNum
@@ -24,7 +35,48 @@ local function Asteroid(def)
             table.insert(mapped, asteroid.y + y + offsets[i])
         end
 
-        return unpack(mapped)
+        return mapped
+    end
+
+    function asteroid:getBounds()
+        local shape = getShape()
+        local xPoints = {}
+        local yPoints = {}
+        for i = 1, #shape do
+            if i % 2 == 0 then
+                table.insert(yPoints, shape[i])
+            else
+                table.insert(xPoints, shape[i])
+            end
+        end
+
+        return {
+            xMin = math.min(unpack(xPoints)),
+            yMin = math.min(unpack(yPoints)),
+            xMax = math.max(unpack(xPoints)),
+            yMax = math.max(unpack(yPoints)),
+        }
+    end
+
+    -- TODO: Move out.
+    local function clamp(value, min, max)
+        if value < min then
+            value = min
+        elseif value > max then
+            value = max
+        end
+
+        return value
+    end
+
+    function asteroid:collides(other)
+        local b = self:getBounds()
+        local closestX = clamp(other.x, b.xMin, b.xMax)
+        local closestY = clamp(other.y, b.yMin, b.yMax)
+        local dX = other.x - closestX
+        local dY = other.y - closestY
+
+        return (dX * dX + dY * dY) < (other.radius * other.radius)
     end
 
     function asteroid:update(dt)
@@ -43,7 +95,9 @@ local function Asteroid(def)
     end
 
     function asteroid:draw()
-        love.graphics.polygon('line', makeShape())
+        if not self.destroyed then -- TODO: Update
+            love.graphics.polygon('line', unpack(getShape()))
+        end
 
         -- UFO polygon
         -- love.graphics.polygon('line',

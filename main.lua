@@ -5,8 +5,9 @@ local asteroids = {}
 function love.load()
     math.randomseed(os.time())
 
-    love.graphics.setDefaultFilter('nearest')
     love.window.setTitle('Asteroids Clone')
+    love.graphics.setDefaultFilter('nearest')
+    WINDOW_WIDTH, WINDOW_HEIGHT = love.graphics.getDimensions()
 
     ship = Ship({x = WINDOW_WIDTH / 2 - 15, y = WINDOW_HEIGHT / 2 + 45,})
     for i = 1, math.random(7, 15) do
@@ -22,12 +23,16 @@ function love.load()
             pointsNum = pointsNum,
         }))
     end
+
+    love.keyboard.keypressed = {}
 end
 
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     end
+
+    love.keyboard.keypressed[key] = true
 end
 
 function love.update(dt)
@@ -36,6 +41,8 @@ function love.update(dt)
     end
 
     ship:update(dt)
+
+    love.keyboard.keypressed = {}
 end
 
 function love.draw()

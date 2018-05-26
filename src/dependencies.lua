@@ -1,5 +1,6 @@
+Utils = require('src/lib/utils')
+Event = require('src/Event')
+Force = require('src/Force')
 Ship = require('src/Ship')
 Asteroid = require('src/Asteroid')
-Utils = require('src/lib/utils')
-
-WINDOW_WIDTH, WINDOW_HEIGHT = love.graphics.getDimensions()
+Laser = require('src/Laser')
