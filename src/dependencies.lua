@@ -1,6 +1,8 @@
 Utils = require('src/lib/utils')
 Event = require('src/Event')
 Force = require('src/Force')
+Timer = require('src/Timer')
 Ship = require('src/Ship')
+AsteroidMaker = require('src/AsteroidMaker')
 Asteroid = require('src/Asteroid')
 Laser = require('src/Laser')

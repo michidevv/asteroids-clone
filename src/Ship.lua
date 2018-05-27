@@ -12,9 +12,22 @@ local function Ship(def)
 
     local isAccelerating = false
     local lasers = {}
+    local tempAngle = ship.angle
+
+    local function onAsteroidsUpdate(asteroids)
+        for i = 1, #asteroids do
+            if asteroids[i]:collides(ship) then
+                print('Collides!')
+                Event:unsubscribe('asteroids_update', onAsteroidsUpdate)
+            end
+        end
+    end
+
+    -- Event:subscribe('asteroids_update', onAsteroidsUpdate)
 
     local function handleControl(self, dt)
         if love.keyboard.isDown('up') then
+            self.angle = tempAngle
             isAccelerating = true
             if self.velocity < self.maxVelocity then
                 self.velocity = self.velocity + self.acceleration * dt
@@ -28,18 +41,20 @@ local function Ship(def)
         end
 
         if love.keyboard.isDown('left') then
-            self.angle = (self.angle - 3 * dt) % (math.pi * 2)
+            -- self.angle = (self.angle - 3 * dt) % (math.pi * 2)
+            tempAngle = (tempAngle - 4 * dt) % (math.pi * 2)
         end
 
         if love.keyboard.isDown('right') then
-            self.angle = (self.angle + 3 * dt) % (math.pi * 2)
+            -- self.angle = (self.angle + 3 * dt) % (math.pi * 2)
+            tempAngle = (tempAngle + 4 * dt) % (math.pi * 2)
         end
 
         if love.keyboard.keypressed['space'] then
             table.insert(lasers, Laser {
                 x = self.x,
                 y = self.y,
-                angle = self.angle,
+                angle = tempAngle, --self.angle,
             })
         end
     end
@@ -74,7 +89,8 @@ local function Ship(def)
     function ship:draw()
         love.graphics.push()
         love.graphics.translate(self.x + 5, self.y - 10)
-        love.graphics.rotate(self.angle)
+        -- love.graphics.rotate(self.angle)
+        love.graphics.rotate(tempAngle)
 
         love.graphics.polygon('line', 0, -10, -7, 12, 0, 7, 7, 12)
 

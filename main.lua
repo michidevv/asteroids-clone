@@ -9,20 +9,8 @@ function love.load()
     love.graphics.setDefaultFilter('nearest')
     WINDOW_WIDTH, WINDOW_HEIGHT = love.graphics.getDimensions()
 
-    ship = Ship({x = WINDOW_WIDTH / 2 - 15, y = WINDOW_HEIGHT / 2 + 45,})
-    for i = 1, math.random(7, 15) do
-        local pointsNum = math.random(4, 10)
-        pointsNum = pointsNum % 2 == 0 and pointsNum or pointsNum + 1
-
-        table.insert(asteroids, Asteroid({
-            x = math.random(10, WINDOW_WIDTH),
-            y = math.random(10, WINDOW_HEIGHT),
-            radius = math.random(30, 60),
-            velocity = math.random(20, 100),
-            angle = math.random(0, math.pi * 2 - 1) + math.random(),
-            pointsNum = pointsNum,
-        }))
-    end
+    ship = Ship({x = WINDOW_WIDTH / 2, y = WINDOW_HEIGHT / 2,})
+    asteroidMaker = AsteroidMaker()
 
     love.keyboard.keypressed = {}
 end
@@ -36,19 +24,13 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    for i = 1, #asteroids do
-        asteroids[i]:update(dt)
-    end
-
+    asteroidMaker:update(dt)
     ship:update(dt)
 
     love.keyboard.keypressed = {}
 end
 
 function love.draw()
-    for i = 1, #asteroids do
-        asteroids[i]:draw(dt)
-    end
-
+    asteroidMaker:draw()
     ship:draw()
 end

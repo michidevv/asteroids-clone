@@ -12,7 +12,7 @@ local function Asteroid(def)
 
     local offsets = {}
     for i = 1, asteroid.pointsNum do
-        offsets[i] = math.random(-15, 15)
+        offsets[i] = math.random(-12, 12)
     end
 
     local function onLaserUpdate(l)
